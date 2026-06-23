@@ -473,8 +473,9 @@ if __name__ == '__main__':
     ])
 
     # Only test set strictly needed here, but keep parity
-    train_data = base_dataset_train(root='data', transform=transform, download=True, **dataset_kwargs)
-    test_data = base_dataset_test(root='data', transform=transform, download=True, **dataset_kwargs_test)
+    dataset_root = hyperparameters.get("dataset_root", "data")
+    train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
+    test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
 
     hyperparameters['num_classes'] = num_classes
     # Create data loaders
