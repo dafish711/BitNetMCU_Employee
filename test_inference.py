@@ -8,6 +8,8 @@ from ctypes import CDLL, c_uint32, c_int8, c_uint8, POINTER
 import argparse
 import yaml
 import importlib
+import matplotlib.pyplot as plt
+
 
 # Export quantized model from saved checkpoint
 # cpldcpu 2024-04-14
@@ -177,3 +179,23 @@ if __name__ == '__main__':
     print('Overall accuracy Python:', correct_py / counter * 100, '%')
     
     print(f'Mismatches between engines: {mismatch} ({mismatch/counter*100}%)')
+    
+    # Inference C
+    result_c = lib.Inference(input_data_pointer)
+
+    # Inference Python
+    result_py = quantized_model.inference_quantized(input_data)
+    predict_py = np.argmax(result_py, axis=1)
+
+    # Show first few samples
+    if counter < 10:
+        img = input_data.reshape(16, 16)
+
+        plt.figure(figsize=(3,3))
+        plt.imshow(img, cmap='gray')
+        plt.title(
+            f"True={labels[0]}\n"
+            f"Py={predict_py[0]}  C={result_c}"
+        )
+        plt.axis('off')
+        plt.show()
