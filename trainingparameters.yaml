@@ -31,7 +31,7 @@ learning_rate: 0.0005
 
 # CosineWarmRestarts parameters
 T_0: 80     # Period of the first restart for CosineWarmRestarts - 10+20+40 = 70 epochs, need to step in epoch 69 at minimum LR
-T_mult: 1.5  # Factor increasing T_i after a restart
+T_mult: 2  # Factor increasing T_i after a restart
 
 # StepLR parameters
 # lr_decay: 0.1     # lr_decay and step size for StepLR
