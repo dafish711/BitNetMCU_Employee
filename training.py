@@ -387,8 +387,8 @@ if __name__ == '__main__':
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
 
-    axes[1].plot(epochs_range, history['train_acc'], label='Train Accuracy')
-    axes[1].plot(epochs_range, history['test_acc'], label='Val Accuracy')
+    axes[1].plot(epochs_range, history['train_accuracy'], label='Train Accuracy')
+    axes[1].plot(epochs_range, history['test_accuracy'], label='Val Accuracy')
     axes[1].set_xlabel('Epoch')
     axes[1].set_ylabel('Accuracy (%)')
     axes[1].set_title('Accuracy over Epochs')
