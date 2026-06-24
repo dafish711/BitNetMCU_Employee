@@ -19,6 +19,7 @@ from models import MaskingLayer
 import os
 from sklearn.metrics import classification_report, confusion_matrix,  roc_auc_score
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 #----------------------------------------------
 # BitNetMCU training
