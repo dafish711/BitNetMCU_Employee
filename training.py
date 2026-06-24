@@ -1,3 +1,4 @@
+from matplotlib.pyplot import axes
 import torch, torch.nn as nn, torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
@@ -15,6 +16,7 @@ import yaml
 from torchsummary import summary
 import importlib
 from models import MaskingLayer
+import os
 
 #----------------------------------------------
 # BitNetMCU training
@@ -131,6 +133,13 @@ def train_model(model, device, hyperparameters, train_data, test_data):
 
     train_loss=[]
     test_loss = []
+    
+    history = {
+        'train_loss': [],
+        'train_accuracy': [],
+        'test_loss': [],
+        'test_accuracy': [],
+    }
 
     # Train the CNN
     for epoch in range(num_epochs):
@@ -238,6 +247,11 @@ def train_model(model, device, hyperparameters, train_data, test_data):
         writer.add_scalar('Accuracy/test', testaccuracy, epoch+1)
         writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch+1)
         writer.flush()
+        
+        history ['train_loss'].append(np.mean(train_loss))
+        history ['test_loss'].append(np.mean(test_loss))
+        history ['train_accuracy'].append(trainaccuracy)
+        history ['test_accuracy'].append(testaccuracy)
 
     numofweights = sum(p.numel() for p in model.parameters() if p.requires_grad)
     # totalbits = numofweights * hyperparameters['BPW']
@@ -246,6 +260,15 @@ def train_model(model, device, hyperparameters, train_data, test_data):
 
     writer.add_hparams(hyperparameters, {'Parameters': numofweights, 'Totalbits': totalbits, 'Accuracy/train': trainaccuracy, 'Accuracy/test': testaccuracy, 'Loss/train': np.mean(train_loss), 'Loss/test': np.mean(test_loss)})
     writer.close()
+
+    return history
+
+def get_next_filename(folder, base_name, ext='.png'):
+    os.makedirs(folder, exist_ok=True)
+    n = 1
+    while os.path.exists(os.path.join(folder, f"{base_name}_{n}{ext}")):
+        n += 1
+    return os.path.join(folder, f"{base_name}_{n}{ext}")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training script')
@@ -344,7 +367,37 @@ if __name__ == '__main__':
     summary(model, input_size=(1, 16, 16))  # Assuming the input size is (1, 16, 16)
 
     print('training...')
-    train_model(model, device, hyperparameters, train_data, test_data)
+    history = train_model(model, device, hyperparameters, train_data, test_data)
 
     print('saving model...')
     torch.save(model.state_dict(), f'modeldata/{runname}.pth')
+    
+    # Plot training curves
+    import matplotlib.pyplot as plt
+    
+    epochs_range = range(1, len(history['train_loss']) + 1)
+    
+    fig, axes = plt.subplots(1,2, figsize=(12, 5))
+    
+    axes[0].plot(epochs_range, history['train_loss'], label='Train Loss')
+    axes[0].plot(epochs_range, history['test_loss'], label='Val Loss')
+    axes[0].set_xlabel('Epoch')
+    axes[0].set_ylabel('Loss')
+    axes[0].set_title('Loss over Epochs')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    axes[1].plot(epochs_range, history['train_acc'], label='Train Accuracy')
+    axes[1].plot(epochs_range, history['test_acc'], label='Val Accuracy')
+    axes[1].set_xlabel('Epoch')
+    axes[1].set_ylabel('Accuracy (%)')
+    axes[1].set_title('Accuracy over Epochs')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    save_path = get_next_filename('training_curves', f'{runname}_training_curves')
+    plt.savefig(save_path, dpi=150)
+    print(f'Saved training curves to {save_path}')
+    plt.show()
+    
