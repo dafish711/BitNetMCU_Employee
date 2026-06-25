@@ -153,6 +153,22 @@ uint32_t BitMnistInference(int8_t *input) {
     return ReLUNorm(layer_out, layer_in, L15_outgoing_weights);
 }
 
+#elif defined(MODEL_FC_Olivetti)
+
+uint32_t BitMnistInference(int8_t *input) {
+    int32_t layer_out[MAX_N_ACTIVATIONS];
+    int8_t layer_in[MAX_N_ACTIVATIONS];
+
+    processfclayer(input, L3_weights, L3_bitperweight, L3_incoming_weights, L3_outgoing_weights, layer_out);
+    ReLUNorm(layer_out, layer_in, L3_outgoing_weights);
+
+    processfclayer(layer_in, L5_weights, L5_bitperweight, L5_incoming_weights, L5_outgoing_weights, layer_out);
+    ReLUNorm(layer_out, layer_in, L5_outgoing_weights);
+
+    processfclayer(layer_in, L7_weights, L7_bitperweight, L7_incoming_weights, L7_outgoing_weights, layer_out);
+    return ReLUNorm(layer_out, layer_in, L7_outgoing_weights);
+}
+
 #else
     #error "No model defined"
 #endif
