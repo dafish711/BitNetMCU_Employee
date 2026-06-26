@@ -116,6 +116,9 @@ uint32_t BitMnistInference(int8_t *input) {
         return ReLUNorm(layer_out, layer_in, L3_outgoing_weights);
     #endif
 }
+
+#elif defined(MODEL_CNN_Olivetti)
+
 #else
     #error "No model defined"
 #endif
