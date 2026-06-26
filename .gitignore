@@ -19,6 +19,8 @@ batchtest/
 *.pdf
 *.log
 *.elog
+modeldata/*.pth
+
 # python cache
 __pycache__/
 venv/
