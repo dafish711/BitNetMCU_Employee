@@ -435,7 +435,7 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Dataset selection (mirror training.py logic)
-    dataset_name = hyperparameters.get("dataset", "Olivetti").upper()
+    dataset_name = hyperparameters.get("dataset", "GATEDRIVER").upper()
 
     if dataset_name == "MNIST":
         num_classes = 10
