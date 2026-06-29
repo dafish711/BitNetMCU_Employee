@@ -379,8 +379,8 @@ if __name__ == '__main__':
     elif dataset_name == "GATEDRIVER":
         from gatedriver_dataset import GateDriverDataset
         num_classes = 16  # Number of unique labels in GATEDRIVER_LABELS
-        train_data = GateDriverDataset(hyperparameters["train_xlsx"])
-        test_data = GateDriverDataset(hyperparameters["validation_xlsx"])
+        dataset_root = GateDriverDataset(hyperparameters["train_xlsx"])
+        test_root = GateDriverDataset(hyperparameters["validation_xlsx"])
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
 
