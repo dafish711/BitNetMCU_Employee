@@ -234,7 +234,7 @@ class FC_GateDriver(nn.Module):
     @cpldcpu 2024-March-24
 
     """
-    def __init__(self, network_width1=32, network_width2=16, network_width3=0,QuantType='Binary', WScale='PerTensor', NormType='RMS', num_classes: int = 16, input_features: int = 32):
+    def __init__(self, network_width1=32, network_width2=16, network_width3=0,QuantType='Binary', WScale='PerTensor', NormType='RMS', num_classes: int = 16, input_features: int = 31):
         super(FC_GateDriver, self).__init__()
 
         self.network_width1 = network_width1
