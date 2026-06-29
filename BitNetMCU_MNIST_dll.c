@@ -169,6 +169,22 @@ uint32_t BitMnistInference(int8_t *input) {
     return ReLUNorm(layer_out, layer_in, L7_outgoing_weights);
 }
 
+#elif defined (MODEL_FC_GateDriver)
+
+uint32_t BitMnistInference(int8_t *input) {
+    int32_t layer_out[MAX_N_ACTIVATIONS];
+    int8_t layer_in[MAX_N_ACTIVATIONS];
+
+    processfclayer(input, L2_weights, L2_bitperweight, L2_incoming_weights, L2_outgoing_weights, layer_out);
+    ReLUNorm(layer_out, layer_in, L2_outgoing_weights);
+
+    processfclayer(layer_in, L4_weights, L4_bitperweight, L4_incoming_weights, L4_outgoing_weights, layer_out);
+    ReLUNorm(layer_out, layer_in, L4_outgoing_weights);
+
+    processfclayer(layer_in, L6_weights, L6_bitperweight, L6_incoming_weights, L6_outgoing_weights, layer_out);
+    return ReLUNorm(layer_out, layer_in, L6_outgoing_weights);
+}
+
 #else
     #error "No model defined"
 #endif
