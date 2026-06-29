@@ -502,11 +502,6 @@ if __name__ == '__main__':
                 augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
                 train_data = ConcatDataset([train_data, augmented_train_data])
 
-    # Only test set strictly needed here, but keep parity
-    dataset_root = hyperparameters.get("dataset_root", "data")
-    train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
-    test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
-
     hyperparameters['num_classes'] = num_classes
     # Create data loaders
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
