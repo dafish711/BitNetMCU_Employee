@@ -12,6 +12,7 @@ import yaml
 import seaborn as sns
 import importlib
 from models import MaskingLayer
+from torch.utils.data import ConcatDataset
 
 # Export quantized model from saved checkpoint
 # cpldcpu 2024-04-14
@@ -38,8 +39,8 @@ def load_model(model_name, params):
             NormType=params["NormType"],
             WScale=params["WScale"],
         )
-        if 'cnn_width' in params:
-            kwargs['cnn_width'] = params['cnn_width']
+        #if 'cnn_width' in params:
+            #kwargs['cnn_width'] = params['cnn_width']
         if 'num_classes' in params:
             kwargs['num_classes'] = params['num_classes']
         return model_class(**kwargs)
@@ -463,15 +464,43 @@ if __name__ == '__main__':
         base_dataset_test = OlivettiFacesDataset
         dataset_kwargs = {"train": True}
         dataset_kwargs_test = {"train": False}
+    elif dataset_name == "GATEDRIVER":
+        from gatedriver_dataset import GateDriverDataset
+        num_classes = 16  # Number of unique labels in GATEDRIVER_LABELS
+        train_data = GateDriverDataset(hyperparameters["dataset_root"])
+        test_data = GateDriverDataset(hyperparameters["validation_root"])
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
 
-    transform = transforms.Compose([
-        transforms.Grayscale(num_output_channels=1),  # Ensure single channel
-        transforms.Resize((16, 16)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean, std)
-    ])
+    if dataset_name != "GATEDRIVER":
+            transform = transforms.Compose([
+                transforms.Grayscale(num_output_channels=1), 
+                transforms.Resize((16, 16)),
+                transforms.ToTensor(),
+                transforms.Normalize(mean, std)
+            ])
+
+            dataset_root = hyperparameters.get("dataset_root", "data")
+
+            train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
+            test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
+
+            if hyperparameters["augmentation"]:
+                # Data augmentation for training data
+                augmented_transform = transforms.Compose([
+                    transforms.Grayscale(num_output_channels=1),
+                    transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
+                    transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
+                    transforms.RandomApply([
+                        transforms.ElasticTransform(alpha=40.0, sigma=4.0)
+                    ], p=hyperparameters["elastictransformprobability"]),
+                    transforms.Resize((16, 16)),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean, std)
+                ])
+
+                augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
+                train_data = ConcatDataset([train_data, augmented_train_data])
 
     # Only test set strictly needed here, but keep parity
     dataset_root = hyperparameters.get("dataset_root", "data")
