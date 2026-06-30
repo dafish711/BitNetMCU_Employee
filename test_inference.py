@@ -86,8 +86,15 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     from employee_dataset import EmployeeFacesDataset
+    
+    transform = transforms.Compose([
+        transforms.Grayscale(num_output_channels=1),
+        transforms.Resize((16, 16)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.4360], std=[0.1487])
+    ])
 
-    test_data = EmployeeFacesDataset(hyperparameters["test_root"])
+    test_data = EmployeeFacesDataset(hyperparameters["test_root"], transform=transform)
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
 
     model = load_model(hyperparameters["model"], hyperparameters).to(device)
