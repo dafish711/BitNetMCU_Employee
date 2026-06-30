@@ -10,7 +10,7 @@ dataset_root: '/content/drive/MyDrive/Custom_Dataset'
 test_root: '/content/drive/MyDrive/Custom_Dataset'
 
 # Validation root directory
-validation_root: '/content/drive/MyDrive/Custom_Dataset/Validation_set'
+validation_root: '/content/drive/MyDrive/Custom_Dataset/validation_set'
 
 # Model selection
 model: 'CNN_EmployeeFaces' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of the model as defined in models.py.
@@ -23,12 +23,12 @@ WScale: 'PerTensor' # 'PerTensor', 'PerOutput'
 
 # Clipping parameters - only used for 2 bit and higher quantization
 maxw_algo: 'octav' # 'octav', 'prop' Algorithm used to calculate the clipping parameters (maximum weight)
-maxw_update_until_epoch: 75 # Update clipping parameters until this epoch, they are frozen afterwards
+maxw_update_until_epoch: 60 # Update clipping parameters until this epoch, they are frozen afterwards
 maxw_quantscale: 0.25  # Used only for clipping_algo='prop'. Determines the relation between stddev of weights and max_weight
 
 # Learning parameters
-num_epochs: 100 # 5, 20, 80
-batch_size: 16
+num_epochs: 80 # 5, 20, 80
+batch_size: 8
 scheduler: "Cosine" # "StepLR", "Cosine", "CosineWarmRestarts"
 learning_rate: 0.0005
 
@@ -44,8 +44,8 @@ learning_rate: 0.0005
 
 # Data augmentation
 augmentation: True
-rotation1: 10  # rotation1 and rotation2 are used for data augmentation
-rotation2: 10
+rotation1: 20  # rotation1 and rotation2 are used for data augmentation
+rotation2: 20
 elastictransformprobability: 0 # probability of applying elastic transform
 
 # channel pruning settings. Requires "MaskLayer" in the model, otherwise these settings have no effect
@@ -56,8 +56,8 @@ prune_totalgroups: 96     # total number of groups. e.g. if there are 384 channe
 
 # Model parameters
 cnn_width: 64       # Width of CNN layers (CNNMNIST only)
-network_width1: 96
-network_width2: 64
+network_width1: 64
+network_width2: 48
 network_width3: 0
 
 # name
