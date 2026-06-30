@@ -94,8 +94,8 @@ if __name__ == '__main__':
         transforms.Normalize(mean=[0.4360], std=[0.1487])
     ])
     
-
-    test_data = EmployeeFacesDataset(hyperparameters["testing_root"], transform=transform)
+    test_root = '/content/drive/MyDrive/Custom_Dataset/testing_set'
+    test_data = datasets.ImageFolder(root=test_root, transform=transform)
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
 
     model = load_model(hyperparameters["model"], hyperparameters).to(device)
