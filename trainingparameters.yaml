@@ -4,10 +4,10 @@
 num_classes: 10
 
 # Dataset root directory
-dataset_root: '/content/drive/MyDrive/Custom_Dataset/Training_set'
+dataset_root: '/content/drive/MyDrive/Custom_Dataset'
 
 # Test root directory
-test_root: '/content/drive/MyDrive/Custom_Dataset/Testing_set'
+test_root: '/content/drive/MyDrive/Custom_Dataset'
 
 # Validation root directory
 validation_root: '/content/drive/MyDrive/Custom_Dataset/Validation_set'
