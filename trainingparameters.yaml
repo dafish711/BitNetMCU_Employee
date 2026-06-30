@@ -13,7 +13,7 @@ test_root: '/content/drive/MyDrive/Custom_Dataset'
 validation_root: '/content/drive/MyDrive/Custom_Dataset/Validation_set'
 
 # Model selection
-model: 'FC_EmployeeFaces' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of the model as defined in models.py.
+model: 'CNN_EmployeeFaces' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of the model as defined in models.py.
 dataset: 'EMPLOYEE_FACES' # 'MNIST', 'Olivetti', or EMNIST splits: EMNIST_BALANCED, EMNIST_BYCLASS, EMNIST_BYMERGE, EMNIST_LETTERS, EMNIST_DIGITS, EMNIST_MNIST
   
 # Quantization setting
@@ -56,8 +56,8 @@ prune_totalgroups: 96     # total number of groups. e.g. if there are 384 channe
 
 # Model parameters
 cnn_width: 64       # Width of CNN layers (CNNMNIST only)
-network_width1: 32
-network_width2: 16
+network_width1: 96
+network_width2: 64
 network_width3: 0
 
 # name
