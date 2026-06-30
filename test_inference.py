@@ -93,8 +93,11 @@ if __name__ == '__main__':
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.4360], std=[0.1487])
     ])
+    
+    test_root = '/content/drive/MyDrive/Custom_Dataset/testing_set'
 
-    test_data = EmployeeFacesDataset(hyperparameters["test_root"], transform=transform)
+    #test_data = EmployeeFacesDataset(hyperparameters["test_root"], transform=transform)
+    test_data = EmployeeFacesDataset(test_root, train=False, transform=transform)
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
 
     model = load_model(hyperparameters["model"], hyperparameters).to(device)
