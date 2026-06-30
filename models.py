@@ -261,3 +261,51 @@ class FC_GateDriver(nn.Module):
         x = self.classifier(x)
 
         return x
+    
+class CNN_EmployeeFaces(nn.Module):
+    """
+    CNN+FC Neural Network for Employee Faces dataset. Depthwise separable convolutions.
+    16x16 input image, 3 hidden layers with a configurable width.
+
+    Adapted from CNNMNIST for 10-class face classification.
+    """
+    def __init__(self,network_width1=64,network_width2=64,network_width3=64,cnn_width=64,QuantType='Binary',WScale='PerTensor',NormType='RMS', num_classes: int = 10):
+        super(CNN_EmployeeFaces, self).__init__()
+
+        self.network_width1 = network_width1
+        self.network_width2 = network_width2
+        self.network_width3 = network_width3
+        self.cnn_width = cnn_width
+
+        self.model = nn.Sequential(
+
+            # 256ch out , 99.5%
+            BitConv2d(1, cnn_width, kernel_size=3, stride=1, padding=(0,0),  groups=1,QuantType='8bit',NormType='None', WScale=WScale),
+            nn.ReLU(),
+            BitConv2d(cnn_width, cnn_width, kernel_size=3, stride=1, padding=(0,0),  groups=cnn_width,QuantType='8bit',NormType='None', WScale=WScale),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            BitConv2d(cnn_width, cnn_width, kernel_size=3, stride=1, padding=(0,0),  groups=cnn_width,QuantType='8bit',NormType='None', WScale=WScale),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Flatten(),
+            # MaskingLayer(96*4),   # learnable masking layer for auto-pruning
+            BitLinear(cnn_width*4 , network_width1,QuantType='2bitsym',NormType=NormType, WScale=WScale),
+            nn.ReLU(),
+            BitLinear(network_width1, network_width2,QuantType=QuantType,NormType=NormType, WScale=WScale),
+            nn.ReLU()
+        )
+
+        if network_width3>0:
+            self.model.add_module("fc3", BitLinear(network_width2, network_width3,QuantType=QuantType,NormType=NormType, WScale=WScale))
+            self.model.add_module("relu_fc2", nn.ReLU())
+
+        last_width = network_width3 if network_width3>0 else network_width2
+        # Output layer parameterized by number of classes (40 for Olivetti Faces)
+        self.classifier= BitLinear(last_width, num_classes,QuantType=QuantType,NormType=NormType, WScale=WScale)
+
+    def forward(self, x):
+        x = self.model(x)
+        x = self.classifier(x)
+        return x

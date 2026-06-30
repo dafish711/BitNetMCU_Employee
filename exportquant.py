@@ -39,8 +39,8 @@ def load_model(model_name, params):
             NormType=params["NormType"],
             WScale=params["WScale"],
         )
-        #if 'cnn_width' in params:
-            #kwargs['cnn_width'] = params['cnn_width']
+        if 'cnn_width' in params:
+            kwargs['cnn_width'] = params['cnn_width']
         if 'num_classes' in params:
             kwargs['num_classes'] = params['num_classes']
         if 'input_features' in params:
@@ -437,7 +437,7 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Dataset selection (mirror training.py logic)
-    dataset_name = hyperparameters.get("dataset", "GATEDRIVER").upper()
+    dataset_name = hyperparameters.get("dataset", "EMPLOYEE_FACES").upper()
 
     if dataset_name == "MNIST":
         num_classes = 10
@@ -466,6 +466,14 @@ if __name__ == '__main__':
         base_dataset_test = OlivettiFacesDataset
         dataset_kwargs = {"train": True}
         dataset_kwargs_test = {"train": False}
+    elif dataset_name == "EMPLOYEE_FACES":
+        from employee_dataset import EmployeeFacesDataset
+        num_classes = 10
+        mean, std = (0.4360,), (0.1487,)  # Example normalization
+        base_dataset_train = EmployeeFacesDataset
+        base_dataset_test = EmployeeFacesDataset
+        dataset_kwargs = {"train": True}
+        dataset_kwargs_test = {"train": False}    
     elif dataset_name == "GATEDRIVER":
         from gatedriver_dataset import GateDriverDataset
         num_classes = 16  # Number of unique labels in GATEDRIVER_LABELS

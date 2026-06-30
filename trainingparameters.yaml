@@ -1,20 +1,20 @@
 # Description: Training parameters for the training script
 
 # Classes count
-num_classes: 16
+num_classes: 10
 
 # Dataset root directory
-dataset_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_training/gate_driver_train.xlsm'
+dataset_root: '/content/drive/MyDrive/Custom_Dataset/Training_set'
 
 # Test root directory
-test_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_testing/gate_driver_test.xlsm'
+test_root: '/content/drive/MyDrive/Custom_Dataset/Testing_set'
 
 # Validation root directory
-validation_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_validation/gate_driver_validation.xlsm'
+validation_root: '/content/drive/MyDrive/Custom_Dataset/Validation_set'
 
 # Model selection
-model: 'FC_GateDriver' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of the model as defined in models.py.
-dataset: 'GATEDRIVER' # 'MNIST', 'Olivetti', or EMNIST splits: EMNIST_BALANCED, EMNIST_BYCLASS, EMNIST_BYMERGE, EMNIST_LETTERS, EMNIST_DIGITS, EMNIST_MNIST
+model: 'FC_EmployeeFaces' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of the model as defined in models.py.
+dataset: 'EMPLOYEE_FACES' # 'MNIST', 'Olivetti', or EMNIST splits: EMNIST_BALANCED, EMNIST_BYCLASS, EMNIST_BYMERGE, EMNIST_LETTERS, EMNIST_DIGITS, EMNIST_MNIST
   
 # Quantization setting
 QuantType: '2bitsym' # 'Ternary', 'Binary', 'BinaryBalanced', '2bitsym', '4bit', '4bitsym', '8bit', 'None", 'FP130', 'NF4'
