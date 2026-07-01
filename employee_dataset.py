@@ -12,6 +12,6 @@ NUM_CLASSES = 10
 class EmployeeFacesDataset(ImageFolder):
     # Dataset for the pre-split Employee faces dataset stored on Google Drive.
      def __init__(self, root, train=True, transform=None, download=None):
-        split_folder = 'training_set' if train else 'validation_set'
+        split_folder = 'training_set' if train else 'testing_set'
         split_path = os.path.join(root, split_folder)
         super().__init__(root=split_path, transform=transform)

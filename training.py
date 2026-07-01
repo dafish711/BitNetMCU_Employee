@@ -146,11 +146,13 @@ def train_model(model, device, hyperparameters, train_data, test_data):
         'test_accuracy': [],
     }
     
+    '''
     best_test_loss = float('inf')
     best_test_acc = 0.0
     best_state_dict = None
     best_epoch = -1
-
+    '''
+    
     # Train the CNN
     for epoch in range(num_epochs):
         correct = 0
@@ -223,6 +225,7 @@ def train_model(model, device, hyperparameters, train_data, test_data):
 
         testaccuracy = correct / total * 100
         
+        """
         current_test_loss = np.mean(test_loss)
         is_better = (
             current_test_loss < best_test_loss - 1e-6 or
@@ -234,10 +237,18 @@ def train_model(model, device, hyperparameters, train_data, test_data):
             best_test_acc = testaccuracy
             best_epoch = epoch + 1
             best_state_dict = {k: v.clone() for k, v in model.state_dict().items()}
-
+        
 
         print(f'Epoch [{epoch+1}/{num_epochs}], LTrain:{np.mean(train_loss):.6f} ATrain: {trainaccuracy:.2f}% LTest:{np.mean(test_loss):.6f} ATest: {correct / total * 100:.2f}% Time[s]: {epoch_time:.2f} Act: {activity*100:.1f}% w_clip/entropy[bits]: ', end='')
-
+        """
+        print(
+            f'Epoch [{epoch+1}/{num_epochs}], '
+            f'LTrain:{np.mean(train_loss):.6f} '
+            f'ATrain: {trainaccuracy:.2f}% '
+            f'LTest:{np.mean(test_loss):.6f} '
+            f'ATest: {correct / total * 100:.2f}%'
+        )
+        
         # update clipping scalars once per epoch
         totalbits = 0
         for i, layer in enumerate(model.modules()):
@@ -314,7 +325,7 @@ def train_model(model, device, hyperparameters, train_data, test_data):
 
     writer.close()
 
-    return history, best_state_dict, best_epoch, best_test_loss, best_test_acc
+    return history # best_state_dict, best_epoch, best_test_loss, best_test_acc
 
 def get_next_filename(folder, base_name, ext='.png'):
     os.makedirs(folder, exist_ok=True)
@@ -438,9 +449,10 @@ if __name__ == '__main__':
        summary(model, input_size=(1, 16, 16)) # Assuming the input size is (1, 16, 16)
 
     print('training...')
-    history, best_state_dict, best_epoch, best_test_loss, best_test_acc = train_model(model, device, hyperparameters, train_data, test_data)
+    #history, best_state_dict, best_epoch, best_test_loss, best_test_acc = train_model(model, device, hyperparameters, train_data, test_data)
+    history = train_model(model, device, hyperparameters, train_data, test_data)
 
-    print(f'Best epoch: {best_epoch} | Val Loss: {best_test_loss:.6f} | Val Acc: {best_test_acc:.2f}%')
+    # print(f'Best epoch: {best_epoch} | Val Loss: {best_test_loss:.6f} | Val Acc: {best_test_acc:.2f}%')
 
     print('saving final model...')
     final_path = f'modeldata/{runname}_final.pth'
@@ -451,6 +463,7 @@ if __name__ == '__main__':
     else:
         print(f'  WARNING: {final_path} was not created!')
 
+    '''
     print('saving best model...')
     best_path = f'modeldata/{runname}.pth'
     torch.save(best_state_dict, best_path)
@@ -459,6 +472,7 @@ if __name__ == '__main__':
         print(f'  Confirmed: {best_path} ({size_kb:.1f} KB)')
     else:
         print(f'  WARNING: {best_path} was not created!')
+    '''
     
     # Plot training curves
     import matplotlib.pyplot as plt

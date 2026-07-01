@@ -269,7 +269,7 @@ class CNN_EmployeeFaces(nn.Module):
 
     Adapted from CNNMNIST for 10-class face classification.
     """
-    def __init__(self,network_width1=64,network_width2=64,network_width3=64,cnn_width=64,QuantType='Binary',WScale='PerTensor',NormType='RMS', num_classes: int = 10):
+    def __init__(self,network_width1=64,network_width2=64,network_width3=32,cnn_width=64,QuantType='Binary',WScale='PerTensor',NormType='RMS', num_classes: int = 10):
         super(CNN_EmployeeFaces, self).__init__()
 
         self.network_width1 = network_width1
