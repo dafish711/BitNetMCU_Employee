@@ -455,7 +455,7 @@ if __name__ == '__main__':
     # print(f'Best epoch: {best_epoch} | Val Loss: {best_test_loss:.6f} | Val Acc: {best_test_acc:.2f}%')
 
     print('saving final model...')
-    final_path = f'modeldata/{runname}_final.pth'
+    final_path = f'modeldata/{runname}.pth'
     torch.save(model.state_dict(), final_path)
     if os.path.exists(final_path):
         size_kb = os.path.getsize(final_path) / 1024
