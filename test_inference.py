@@ -44,7 +44,7 @@ def load_model(model_name, params):
     except AttributeError:
         raise ValueError(f"Model {model_name} not found in models.py")
     
-def export_test_data_to_c(test_loader, filename, num=8):
+def export_test_data_to_c(test_loader, filename, input_scale,num=8):
     with open(filename, 'w') as f:
         for i, (input_data, labels) in enumerate(test_loader):
             if i >= num:
@@ -53,9 +53,12 @@ def export_test_data_to_c(test_loader, filename, num=8):
             input_data = input_data.view(input_data.size(0), -1).cpu().numpy()
             labels = labels.cpu().numpy()
 
-            scale = 127.0 / np.maximum(np.abs(input_data).max(axis=-1, keepdims=True), 1e-5)
-            scaled_data = np.round(input_data * scale).clip(-128, 127).astype(np.uint8)
-
+            # check scale value from training set
+            #scale = 127.0 / np.maximum(np.abs(input_data).max(axis=-1, keepdims=True), 1e-5)
+            #scaled_data = np.round(input_data * scale).clip(-128, 127).astype(np.uint8)
+            
+            scaled_data = np.round(input_data * input_scale).clip(-128, 127).astype(np.int8)
+            
             f.write(f'int8_t input_data_{i}[256] = {{\n')
             flattened_data = scaled_data.flatten()
             for k in range(0, len(flattened_data), 16):
@@ -97,6 +100,14 @@ if __name__ == '__main__':
     test_root = '/content/drive/MyDrive/Custom_Dataset/testing_set'
     test_data = datasets.ImageFolder(root=test_root, transform=transform)
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
+    
+    train_root = '/content/drive/MyDrive/Custom_Dataset/training_set'
+    train_data = datasets.ImageFolder(root=train_root, transform=transform)
+    train_loader = DataLoader(train_data, batch_size = len(train_data), shuffle = False)
+    
+    train_images, _ = next(iter(train_loader))
+    max_abs = torch.abs (train_images).max().item()
+    input_scale = 127.0 / max_abs
 
     model = load_model(hyperparameters["model"], hyperparameters).to(device)
     
@@ -138,6 +149,13 @@ if __name__ == '__main__':
     test_loader2 = DataLoader(test_data, batch_size=1, shuffle=False)    
 
     # export_test_data_to_c(test_loader2, 'BitNetMCU_MNIST_test_data.h', num=10)
+    
+    export_test_data_to_c(
+        test_loader2,
+        'BitNetMCU_MNIST_test_data.h',
+        input_scale,
+        num=10
+    )
 
     lib = CDLL('./Bitnet_inf.dll')
     
@@ -146,8 +164,10 @@ if __name__ == '__main__':
         input_data = input_data.view(input_data.size(0), -1).cpu().numpy()
         labels = labels.cpu().numpy()
 
-        scale = 127.0 / np.maximum(np.abs(input_data).max(axis=-1, keepdims=True), 1e-5)
-        scaled_data = np.round(input_data * scale).clip(-128, 127) 
+        #scale = 127.0 / np.maximum(np.abs(input_data).max(axis=-1, keepdims=True), 1e-5)
+        #scaled_data = np.round(input_data * scale).clip(-128, 127) 
+        
+        scaled_data = np.round(input_data * input_scale).clip(-128, 127)
 
         # Create a pointer to the ctypes array
         input_data_pointer = (c_int8 * len(scaled_data.flatten()))(*scaled_data.astype(np.int8).flatten())
