@@ -57,7 +57,7 @@ def export_test_data_to_c(test_loader, filename, input_scale,num=8):
             #scale = 127.0 / np.maximum(np.abs(input_data).max(axis=-1, keepdims=True), 1e-5)
             #scaled_data = np.round(input_data * scale).clip(-128, 127).astype(np.uint8)
             
-            scaled_data = np.round(input_data * input_scale).clip(-128, 127).astype(np.int8)
+            scaled_data = np.round(input_data * input_scale).clip(-128, 127).astype(np.uint8)
             
             f.write(f'int8_t input_data_{i}[256] = {{\n')
             flattened_data = scaled_data.flatten()
@@ -170,9 +170,9 @@ if __name__ == '__main__':
         scaled_data = np.round(input_data * input_scale).clip(-128, 127)
 
         # Create a pointer to the ctypes array
-        input_data_pointer = (c_int8 * len(scaled_data.flatten()))(*scaled_data.astype(np.int8).flatten())
+        input_data_pointer = (c_uint8 * len(scaled_data.flatten()))(*scaled_data.astype(np.uint8).flatten())
 
-        lib.Inference.argtypes = [POINTER(c_int8)]
+        lib.Inference.argtypes = [POINTER(c_uint8)]
         lib.Inference.restype = c_uint32
 
         # Inference C
